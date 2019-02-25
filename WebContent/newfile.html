@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<link rel="stylesheet"
+	href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css">
+<link rel="stylesheet"
+	href="https://cdn.bootcss.com/bootstrap-fileinput/4.4.2/css/fileinput.min.css">
+<body>
+</head>
+<style>
+	#result img{
+		width:20%;
+		height: 20%;
+	}
+</style>
+<body>
+<!-- multiple：倍数，：数据重写初始，data-min-file-count：数据最小文件计数
+ data-preview-file-type:数据预览文件类型 , data-upload-url:数据上传路径,
+ data-preview-file-icon:数据预览文件图标-->
+<!-- 当js有了，class：file并没有什么作用（这里是boostrap操作） -->
+	<input id="file-1" type="file"  name="file-1" class="file"  data-min-file-count="3" data-overwrite-initial="false" >
+	<!-- 这里是相应的js源码操作 -->
+	请选取一个图像文件:
+	<input type="file" id="file" name="file"/>
+	<div id="result"></div>
+
+</body>
+<script src="https://cdn.bootcss.com/jquery/2.1.1/jquery.min.js"></script>
+<script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<!-- 基于Bootstrap的多图片（文件也可以）上传、预览、删除、缩放、进度...显示 -->
+<script src="https://cdn.bootcss.com/bootstrap-fileinput/4.4.2/js/fileinput.min.js "></script>
+<script src="https://cdn.bootcss.com/bootstrap-fileinput/4.4.2/js/locales/zh.js " charset="UTF-8"></script>
+<script type="text/javascript">
+	function ProcessFile(e) {
+		var file = document.getElementById('file').files[0];
+		if (file) {
+			//创建读取文件流
+			var reader = new FileReader();
+			//当文件读取完毕，在调用方法
+			reader.onload = function(event) {
+				//将点击的图片的base64编码赋给txt
+				var txt = event.target.result;
+				//创建img节点
+				var img = document.createElement("img");
+				//图片路径传入值
+				img.src = txt;
+				document.getElementById("result").appendChild(img);
+			};
+		}
+		//写FileReader对象的readAsDataURL方法可以将读取到的文件编码成Data URL
+		//Data URL是一项特殊的技术，可以将资料(例如图片)内嵌在网页之中，不用放到外部文件。
+		//使用Data URL的好处是，您不需要额外再发出一个HTTP 请求到服务器端取得额外的资料；
+		//而缺点便是，网页的大小可能会变大。它适合应用在内嵌小图片，不建议将大图像文件编码成Data URL来使用。
+		//您的图像文件不能够超过浏览器限定的大小，否则无法读取图像文件。
+		reader.readAsDataURL(file);
+	}
+	function contentLoaded() {
+		//onchange 事件会在域的内容改变时发生
+		//addEventListener添加事件
+		document.getElementById('file').addEventListener('change', ProcessFile,
+				false);
+	}
+	//dom内容加载完毕
+	window.addEventListener("DOMContentLoaded", contentLoaded, false);
+	var FileInput =function(ctrlName, uploadUrl) {
+	var formData = new FormData(); 
+	//取到dom类型的文件
+	formData.append('file', $('#file-1')[0].files[0]);  //添加图片信息的参数
+	$.ajax({
+		//后台处理的路径
+	    url: '',
+	    type: 'POST',
+	    cache: false, //上传文件不需要缓存
+	    data: formData,
+	    processData: false, // 告诉jQuery不要去处理发送的数据
+	    contentType: false, // 告诉jQuery不要去设置Content-Type请求头
+	    success: function (data) {
+	       //上传成功的回调函数
+	    },
+	    error: function (data) {
+	    	
+	    }
+	});  
+}
+$(function () {
+    //调用方法，传入标签id和上传地址
+  //对boostrap插件的使用
+	$("#file-1").fileinput({
+		uploadUrl : '/addRoom', // 后台处理连接
+		language: 'zh', //设置语言(中文)
+		allowedFileExtensions : [ 'jpg', 'png', 'gif' ,'jpeg','bmp'],
+		overwriteInitial : false,//不覆盖已存在的图片
+		maxFileSize : 4000,//文件上传最大长度
+		maxFilesNum : 10,
+		enctype: 'multipart/form-data',
+		showUpload: false, //是否显示上传按钮
+		showCaption: true,//是否显示标题
+		showRemove: false,//是否显示移除
+		uploadAsync:true,//是否异步上传
+		allowedFileTypes: ['image', 'video', 'flash'],
+		//将文件名中间的-替换成_  回调函数
+		slugCallback : function(filename) {
+			alert(1);
+			console.log(language	);
+			return filename.replace('(', '_').replace(']', '_');
+		}
+	});
+});
+
+</script>
+</html>
